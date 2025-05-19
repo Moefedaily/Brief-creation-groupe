@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { ListService } from '../../services/list.service';
 import { List } from '../../models/list';
 import { Person, Gender, Profile } from '../../models/person';
@@ -21,12 +20,13 @@ import { Person, Gender, Profile } from '../../models/person';
   styleUrls: ['./list-detail.component.scss'],
 })
 export class ListDetailComponent implements OnInit {
-  list$!: Observable<List | undefined>;
+  list: List | undefined;
   personForm!: FormGroup;
   showPersonForm = false;
   editingPerson: Person | null = null;
   errorMessage = '';
   listId!: number;
+  isLoading = true;
 
   genderOptions = Object.values(Gender);
   profileOptions = Object.values(Profile);
@@ -53,8 +53,18 @@ export class ListDetailComponent implements OnInit {
   }
 
   loadList(): void {
-    // Update to use Observable
-    this.list$ = this.listService.getListById(this.listId);
+    try {
+      this.isLoading = true;
+      this.list = this.listService.getListById(this.listId);
+      this.isLoading = false;
+
+      if (!this.list) {
+        this.router.navigate(['/lists']);
+      }
+    } catch (error: any) {
+      this.errorMessage = error.message;
+      this.isLoading = false;
+    }
   }
 
   private initForm(): void {
@@ -116,34 +126,18 @@ export class ListDetailComponent implements OnInit {
 
     try {
       if (this.editingPerson) {
-        // Update existing person
         const updatedPerson: Person = {
           ...this.editingPerson,
           ...this.personForm.value,
         };
 
-        this.listService.updatePerson(this.listId, updatedPerson).subscribe({
-          next: () => {
-            this.loadList();
-            this.togglePersonForm();
-          },
-          error: (error) => {
-            this.errorMessage = error.message;
-          },
-        });
+        this.listService.updatePerson(this.listId, updatedPerson);
+        this.loadList();
+        this.togglePersonForm();
       } else {
-        // Add new person
-        this.listService
-          .addPerson(this.listId, this.personForm.value)
-          .subscribe({
-            next: () => {
-              this.loadList();
-              this.togglePersonForm();
-            },
-            error: (error) => {
-              this.errorMessage = error.message;
-            },
-          });
+        this.listService.addPerson(this.listId, this.personForm.value);
+        this.loadList();
+        this.togglePersonForm();
       }
     } catch (error: any) {
       this.errorMessage = error.message;
@@ -154,14 +148,12 @@ export class ListDetailComponent implements OnInit {
     if (
       confirm(`Are you sure you want to remove ${person.name} from this list?`)
     ) {
-      this.listService.deletePerson(this.listId, person.id).subscribe({
-        next: () => {
-          this.loadList();
-        },
-        error: (error) => {
-          this.errorMessage = error.message;
-        },
-      });
+      try {
+        this.listService.deletePerson(this.listId, person.id);
+        this.loadList();
+      } catch (error: any) {
+        this.errorMessage = error.message;
+      }
     }
   }
 

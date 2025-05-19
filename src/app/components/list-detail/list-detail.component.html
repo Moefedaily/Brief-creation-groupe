@@ -1,4 +1,4 @@
-<div class="list-detail-container" *ngIf="list$ | async as list; else loading">
+<div class="list-detail-container" *ngIf="!isLoading && list; else loading">
   <div class="header-actions">
     <div>
       <button class="btn-back" (click)="goBack()">&larr; Back to Lists</button>
@@ -218,7 +218,7 @@
     </table>
   </div>
 
-  <div *ngIf="list.draws.length > 0" class="previous-draws">
+  <div *ngIf="list.draws && list.draws.length > 0" class="previous-draws">
     <h2>Previous Group Draws</h2>
     <div class="draws-grid">
       <div *ngFor="let draw of list.draws" class="draw-card">

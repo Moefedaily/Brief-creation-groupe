@@ -31,45 +31,44 @@
           </div>
         </div>
       </div>
-
       <div class="form-actions">
         <button type="submit" class="btn-red" [disabled]="newListForm.invalid">
           Create List
         </button>
       </div>
     </form>
-
     <div *ngIf="errorMessage" class="error-msg">
       {{ errorMessage }}
     </div>
   </div>
 
-  <div class="lists-grid">
-    <ng-container *ngIf="lists$ | async as lists">
-      <div *ngIf="lists.length === 0" class="no-lists">
-        <p>
-          You don't have any lists yet. Create your first list to get started!
-        </p>
-      </div>
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading lists...</p>
+  </div>
 
-      <div
-        *ngFor="let list of lists"
-        class="list-card"
-        (click)="viewList(list.id)"
-      >
-        <div class="list-content">
-          <h3>{{ list.name }}</h3>
-          <div class="list-stats">
-            <p>👤 {{ list.people.length }} people</p>
-            <p>👥 {{ list.draws.length }} draws</p>
-          </div>
-        </div>
-        <div class="list-actions">
-          <button class="btn-delete" (click)="deleteList($event, list.id)">
-            <span>×</span>
-          </button>
+  <div *ngIf="!isLoading" class="lists-grid">
+    <div *ngIf="lists.length === 0" class="no-lists">
+      <p>
+        You don't have any lists yet. Create your first list to get started!
+      </p>
+    </div>
+    <div
+      *ngFor="let list of lists"
+      class="list-card"
+      (click)="viewList(list.id)"
+    >
+      <div class="list-content">
+        <h3>{{ list.name }}</h3>
+        <div class="list-stats">
+          <p>👤 {{ list.people.length }} people</p>
+          <p>👥 {{ list.draws.length }} draws</p>
         </div>
       </div>
-    </ng-container>
+      <div class="list-actions">
+        <button class="btn-delete" (click)="deleteList($event, list.id)">
+          <span>×</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>

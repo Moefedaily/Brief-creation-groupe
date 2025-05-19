@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { ListService } from '../../services/list.service';
 import { List } from '../../models/list';
 
@@ -19,10 +18,11 @@ import { List } from '../../models/list';
   styleUrls: ['./lists.component.scss'],
 })
 export class ListsComponent implements OnInit {
-  lists$!: Observable<List[]>;
+  lists: List[] = [];
   newListForm!: FormGroup;
   showNewListForm = false;
   errorMessage = '';
+  isLoading = true;
 
   constructor(
     private listService: ListService,
@@ -45,7 +45,14 @@ export class ListsComponent implements OnInit {
   }
 
   loadLists(): void {
-    this.lists$ = this.listService.getAllLists();
+    try {
+      this.isLoading = true;
+      this.lists = this.listService.getAllLists();
+      this.isLoading = false;
+    } catch (error: any) {
+      this.errorMessage = error.message;
+      this.isLoading = false;
+    }
   }
 
   get f() {
@@ -66,15 +73,9 @@ export class ListsComponent implements OnInit {
     }
 
     try {
-      this.listService.createList(this.f['name'].value).subscribe({
-        next: (list) => {
-          this.loadLists();
-          this.toggleNewListForm();
-        },
-        error: (error) => {
-          this.errorMessage = error.message;
-        },
-      });
+      this.listService.createList(this.f['name'].value);
+      this.loadLists();
+      this.toggleNewListForm();
     } catch (error: any) {
       this.errorMessage = error.message;
     }
@@ -91,18 +92,16 @@ export class ListsComponent implements OnInit {
         'Are you sure you want to delete this list? This action cannot be undone.',
       )
     ) {
-      this.listService.deleteList(listId).subscribe({
-        next: (success) => {
-          if (success) {
-            this.loadLists();
-          } else {
-            this.errorMessage = 'Failed to delete the list';
-          }
-        },
-        error: (error) => {
-          this.errorMessage = error.message;
-        },
-      });
+      try {
+        const success = this.listService.deleteList(listId);
+        if (success) {
+          this.loadLists();
+        } else {
+          this.errorMessage = 'Failed to delete the list';
+        }
+      } catch (error: any) {
+        this.errorMessage = error.message;
+      }
     }
   }
 }

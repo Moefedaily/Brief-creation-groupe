@@ -32,16 +32,14 @@ export class HomeComponent implements OnInit {
   }
 
   loadRecentLists(): void {
-    this.listService.getAllLists().subscribe({
-      next: (lists) => {
-        this.recentLists = lists.slice(0, 4);
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading lists:', error);
-        this.isLoading = false;
-      },
-    });
+    try {
+      const allLists = this.listService.getAllLists();
+      this.recentLists = allLists.slice(0, 4);
+      this.isLoading = false;
+    } catch (error) {
+      console.error('Error loading lists:', error);
+      this.isLoading = false;
+    }
   }
 
   onGetStarted(): void {

@@ -1,5 +1,5 @@
+// src/app/services/list.service.ts (Simplified)
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
 import { List } from '../models/list';
 import { Person } from '../models/person';
 import { GroupDraw } from '../models/group';
@@ -10,58 +10,54 @@ import { AuthService } from './auth.service';
 })
 export class ListService {
   private lists: List[] = [];
-  private listsSubject = new BehaviorSubject<List[]>([]);
-  public lists$ = this.listsSubject.asObservable();
 
   constructor(private authService: AuthService) {
     this.loadLists();
-
-    this.authService.currentUser$.subscribe((user) => {
-      if (user) {
-        this.loadLists();
-      } else {
-        this.lists = [];
-        this.listsSubject.next([]);
-      }
-    });
   }
 
   private loadLists(): void {
-    const user = this.authService.currentUserValue;
+    if (!this.authService.isLoggedIn()) return;
+
+    const user = this.authService.getCurrentUser();
     if (!user) return;
 
     const storedLists = localStorage.getItem(`lists_${user.id}`);
     if (storedLists) {
       this.lists = JSON.parse(storedLists);
-      this.listsSubject.next(this.lists);
     } else {
       this.lists = [];
-      this.listsSubject.next([]);
     }
   }
 
   private saveLists(): void {
-    const user = this.authService.currentUserValue;
+    if (!this.authService.isLoggedIn()) return;
+
+    const user = this.authService.getCurrentUser();
     if (!user) return;
 
     localStorage.setItem(`lists_${user.id}`, JSON.stringify(this.lists));
-    this.listsSubject.next([...this.lists]);
   }
 
-  getAllLists(): Observable<List[]> {
-    return this.lists$;
+  getAllLists(): List[] {
+    this.loadLists();
+    return [...this.lists];
   }
 
-  getListById(id: number): Observable<List | undefined> {
-    const list = this.lists.find((l) => l.id === id);
-    return of(list);
+  getListById(id: number): List | undefined {
+    this.loadLists();
+    return this.lists.find((l) => l.id === id);
   }
 
-  createList(name: string): Observable<List> {
-    const user = this.authService.currentUserValue;
-    if (!user) throw new Error('User not authenticated');
+  createList(name: string): List {
+    if (!this.authService.isLoggedIn()) {
+      throw new Error('User not authenticated');
+    }
 
-    // Check if name is already used by this user
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     if (this.lists.some((l) => l.name === name && l.userId === user.id)) {
       throw new Error('A list with this name already exists');
     }
@@ -76,12 +72,18 @@ export class ListService {
 
     this.lists.push(newList);
     this.saveLists();
-    return of(newList);
+    return { ...newList };
   }
 
-  updateList(id: number, name: string): Observable<List> {
-    const user = this.authService.currentUserValue;
-    if (!user) throw new Error('User not authenticated');
+  updateList(id: number, name: string): List {
+    if (!this.authService.isLoggedIn()) {
+      throw new Error('User not authenticated');
+    }
+
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
 
     if (
       this.lists.some(
@@ -92,27 +94,31 @@ export class ListService {
     }
 
     const list = this.lists.find((l) => l.id === id);
-    if (!list) throw new Error('List not found');
+    if (!list) {
+      throw new Error('List not found');
+    }
 
     list.name = name;
     this.saveLists();
-    return of(list);
+    return { ...list };
   }
 
-  deleteList(id: number): Observable<boolean> {
+  deleteList(id: number): boolean {
     const initialLength = this.lists.length;
     this.lists = this.lists.filter((l) => l.id !== id);
 
     if (initialLength !== this.lists.length) {
       this.saveLists();
-      return of(true);
+      return true;
     }
-    return of(false);
+    return false;
   }
 
-  addPerson(listId: number, person: Omit<Person, 'id'>): Observable<Person> {
+  addPerson(listId: number, person: Omit<Person, 'id'>): Person {
     const list = this.lists.find((l) => l.id === listId);
-    if (!list) throw new Error('List not found');
+    if (!list) {
+      throw new Error('List not found');
+    }
 
     const newPerson: Person = {
       ...person,
@@ -121,38 +127,44 @@ export class ListService {
 
     list.people.push(newPerson);
     this.saveLists();
-    return of(newPerson);
+    return { ...newPerson };
   }
 
-  updatePerson(listId: number, person: Person): Observable<Person> {
+  updatePerson(listId: number, person: Person): Person {
     const list = this.lists.find((l) => l.id === listId);
-    if (!list) throw new Error('List not found');
+    if (!list) {
+      throw new Error('List not found');
+    }
 
     const personIndex = list.people.findIndex((p) => p.id === person.id);
-    if (personIndex === -1) throw new Error('Person not found in list');
+    if (personIndex === -1) {
+      throw new Error('Person not found in list');
+    }
 
     list.people[personIndex] = { ...person };
     this.saveLists();
-    return of(person);
+    return { ...person };
   }
 
-  deletePerson(listId: number, personId: number): Observable<boolean> {
+  deletePerson(listId: number, personId: number): boolean {
     const list = this.lists.find((l) => l.id === listId);
-    if (!list) return of(false);
+    if (!list) return false;
 
     const initialLength = list.people.length;
     list.people = list.people.filter((p) => p.id !== personId);
 
     if (initialLength !== list.people.length) {
       this.saveLists();
-      return of(true);
+      return true;
     }
-    return of(false);
+    return false;
   }
 
-  saveGroupDraw(listId: number, draw: GroupDraw): Observable<GroupDraw> {
+  saveGroupDraw(listId: number, draw: GroupDraw): GroupDraw {
     const list = this.lists.find((l) => l.id === listId);
-    if (!list) throw new Error('List not found');
+    if (!list) {
+      throw new Error('List not found');
+    }
 
     const newDraw: GroupDraw = {
       ...draw,
@@ -163,13 +175,13 @@ export class ListService {
 
     list.draws.push(newDraw);
     this.saveLists();
-    return of(newDraw);
+    return { ...newDraw };
   }
 
-  getGroupDraws(listId: number): Observable<GroupDraw[]> {
+  getGroupDraws(listId: number): GroupDraw[] {
     const list = this.lists.find((l) => l.id === listId);
-    if (!list) return of([]);
+    if (!list) return [];
 
-    return of(list.draws);
+    return [...list.draws];
   }
 }
