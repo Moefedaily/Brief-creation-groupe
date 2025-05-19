@@ -1,0 +1,139 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 2rem;
+  background-color: #f7f7f7;
+}
+
+.login-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .info-text {
+    text-align: center;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .demo-accounts {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+
+    .demo-account {
+      p {
+        margin: 0.3rem 0;
+        font-size: 0.9rem;
+        color: #666;
+      }
+    }
+  }
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+
+    &:focus {
+      outline: none;
+      border-color: #e53e3e;
+      box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
+    }
+
+    &.is-invalid {
+      border-color: #e53e3e;
+    }
+  }
+
+  .invalid-feedback {
+    color: #e53e3e;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+  }
+}
+
+.form-actions {
+  text-align: center;
+
+  .btn-red {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: #c53030;
+    }
+
+    &:disabled {
+      background-color: #e57979;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.error-msg {
+  text-align: center;
+  color: #e53e3e;
+  margin-top: 1rem;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 576px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .demo-accounts {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

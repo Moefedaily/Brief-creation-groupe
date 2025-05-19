@@ -1,0 +1,75 @@
+<div class="lists-container">
+  <div class="header-actions">
+    <h1>My Lists</h1>
+    <button class="btn-red" (click)="toggleNewListForm()">
+      {{ showNewListForm ? "Cancel" : "Create New List" }}
+    </button>
+  </div>
+
+  <div *ngIf="showNewListForm" class="new-list-form">
+    <form [formGroup]="newListForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">List Name</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          [ngClass]="{ 'is-invalid': f['name'].invalid && f['name'].touched }"
+        />
+        <div
+          *ngIf="f['name'].invalid && f['name'].touched"
+          class="invalid-feedback"
+        >
+          <div *ngIf="f['name'].errors?.['required']">
+            List name is required
+          </div>
+          <div *ngIf="f['name'].errors?.['minlength']">
+            List name must be at least 3 characters
+          </div>
+          <div *ngIf="f['name'].errors?.['maxlength']">
+            List name must not exceed 50 characters
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-red" [disabled]="newListForm.invalid">
+          Create List
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="errorMessage" class="error-msg">
+      {{ errorMessage }}
+    </div>
+  </div>
+
+  <div class="lists-grid">
+    <ng-container *ngIf="lists$ | async as lists">
+      <div *ngIf="lists.length === 0" class="no-lists">
+        <p>
+          You don't have any lists yet. Create your first list to get started!
+        </p>
+      </div>
+
+      <div
+        *ngFor="let list of lists"
+        class="list-card"
+        (click)="viewList(list.id)"
+      >
+        <div class="list-content">
+          <h3>{{ list.name }}</h3>
+          <div class="list-stats">
+            <p>👤 {{ list.people.length }} people</p>
+            <p>👥 {{ list.draws.length }} draws</p>
+          </div>
+        </div>
+        <div class="list-actions">
+          <button class="btn-delete" (click)="deleteList($event, list.id)">
+            <span>×</span>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

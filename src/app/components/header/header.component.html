@@ -1,0 +1,19 @@
+<header>
+  <h2 routerLink="/" class="logo">GroupFormer</h2>
+  <nav>
+    <ng-container *ngIf="!authService.isLoggedIn(); else loggedInNav">
+      <a routerLink="/">About</a>
+      <a routerLink="/">Features</a>
+      <a routerLink="/">FAQ</a>
+      <button class="btn-red" (click)="onLogin()">Connect</button>
+      <button class="btn-border" (click)="onRegister()">Subscribe</button>
+    </ng-container>
+
+    <ng-template #loggedInNav>
+      <a routerLink="/lists">My Lists</a>
+      <a routerLink="/profile">My Profile</a>
+      <span class="user-name">Welcome, {{ userName }}</span>
+      <button class="btn-red" (click)="onLogout()">Logout</button>
+    </ng-template>
+  </nav>
+</header>

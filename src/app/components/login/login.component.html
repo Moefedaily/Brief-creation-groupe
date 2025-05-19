@@ -1,0 +1,38 @@
+<section class="login-container">
+  <div class="login-card">
+    <h2>Login</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" formControlName="username" id="username" />
+        <div *ngIf="submitted && f['username'].errors" class="invalid-feedback">
+          <div *ngIf="f['username'].errors['required']">
+            Username is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" formControlName="password" id="password" />
+        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+          <div *ngIf="f['password'].errors['required']">
+            Password is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button [disabled]="loading" class="btn-red">
+          <span *ngIf="loading" class="spinner"></span>
+          Login
+        </button>
+      </div>
+
+      <div *ngIf="error" class="error-msg">
+        {{ error }}
+      </div>
+    </form>
+  </div>
+</section>

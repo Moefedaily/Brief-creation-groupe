@@ -1,0 +1,243 @@
+<div class="list-detail-container" *ngIf="list$ | async as list; else loading">
+  <div class="header-actions">
+    <div>
+      <button class="btn-back" (click)="goBack()">&larr; Back to Lists</button>
+      <h1>{{ list.name }}</h1>
+    </div>
+    <div class="action-buttons">
+      <button class="btn-border" (click)="togglePersonForm()">
+        {{ showPersonForm ? "Cancel" : "Add Person" }}
+      </button>
+      <button
+        class="btn-red"
+        [disabled]="list.people.length < 2"
+        (click)="generateGroups()"
+      >
+        Generate Groups
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="showPersonForm" class="person-form-card">
+    <h2>{{ editingPerson ? "Edit Person" : "Add New Person" }}</h2>
+
+    <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            [ngClass]="{ 'is-invalid': f['name'].invalid && f['name'].touched }"
+          />
+          <div
+            *ngIf="f['name'].invalid && f['name'].touched"
+            class="invalid-feedback"
+          >
+            <div *ngIf="f['name'].errors?.['required']">Name is required</div>
+            <div *ngIf="f['name'].errors?.['minlength']">
+              Name must be at least 3 characters
+            </div>
+            <div *ngIf="f['name'].errors?.['maxlength']">
+              Name must not exceed 50 characters
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="age">Age</label>
+          <input
+            type="number"
+            id="age"
+            formControlName="age"
+            min="1"
+            max="99"
+            [ngClass]="{ 'is-invalid': f['age'].invalid && f['age'].touched }"
+          />
+          <div
+            *ngIf="f['age'].invalid && f['age'].touched"
+            class="invalid-feedback"
+          >
+            <div *ngIf="f['age'].errors?.['required']">Age is required</div>
+            <div *ngIf="f['age'].errors?.['min'] || f['age'].errors?.['max']">
+              Age must be between 1 and 99
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select id="gender" formControlName="gender">
+            <option *ngFor="let gender of genderOptions" [value]="gender">
+              {{ gender }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="profile">Profile</label>
+          <select id="profile" formControlName="profile">
+            <option *ngFor="let profile of profileOptions" [value]="profile">
+              {{ profile }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="frenchFluency">French Fluency (1-4)</label>
+          <input
+            type="number"
+            id="frenchFluency"
+            formControlName="frenchFluency"
+            min="1"
+            max="4"
+            [ngClass]="{
+              'is-invalid':
+                f['frenchFluency'].invalid && f['frenchFluency'].touched,
+            }"
+          />
+          <div
+            *ngIf="f['frenchFluency'].invalid && f['frenchFluency'].touched"
+            class="invalid-feedback"
+          >
+            <div *ngIf="f['frenchFluency'].errors?.['required']">
+              French fluency level is required
+            </div>
+            <div
+              *ngIf="
+                f['frenchFluency'].errors?.['min'] ||
+                f['frenchFluency'].errors?.['max']
+              "
+            >
+              Level must be between 1 and 4
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="technicalLevel">Technical Level (1-4)</label>
+          <input
+            type="number"
+            id="technicalLevel"
+            formControlName="technicalLevel"
+            min="1"
+            max="4"
+            [ngClass]="{
+              'is-invalid':
+                f['technicalLevel'].invalid && f['technicalLevel'].touched,
+            }"
+          />
+          <div
+            *ngIf="f['technicalLevel'].invalid && f['technicalLevel'].touched"
+            class="invalid-feedback"
+          >
+            <div *ngIf="f['technicalLevel'].errors?.['required']">
+              Technical level is required
+            </div>
+            <div
+              *ngIf="
+                f['technicalLevel'].errors?.['min'] ||
+                f['technicalLevel'].errors?.['max']
+              "
+            >
+              Level must be between 1 and 4
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="formerDWWM" />
+          Former DWWM
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-red" [disabled]="personForm.invalid">
+          {{ editingPerson ? "Update" : "Add" }} Person
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="errorMessage" class="error-msg">
+      {{ errorMessage }}
+    </div>
+  </div>
+
+  <div *ngIf="list.people.length === 0" class="no-people">
+    <p>This list has no people yet. Add some people to get started!</p>
+  </div>
+
+  <div *ngIf="list.people.length > 0" class="people-list">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+          <th>Profile</th>
+          <th>French</th>
+          <th>Tech</th>
+          <th>DWWM</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let person of list.people">
+          <td>{{ person.name }}</td>
+          <td>{{ person.age }}</td>
+          <td>{{ person.gender }}</td>
+          <td>{{ person.profile }}</td>
+          <td>{{ person.frenchFluency }}/4</td>
+          <td>{{ person.technicalLevel }}/4</td>
+          <td>{{ person.formerDWWM ? "Yes" : "No" }}</td>
+          <td class="actions">
+            <button
+              class="btn-icon edit"
+              (click)="togglePersonForm(person)"
+              title="Edit"
+            >
+              ✏️
+            </button>
+            <button
+              class="btn-icon delete"
+              (click)="deletePerson(person)"
+              title="Delete"
+            >
+              🗑️
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="list.draws.length > 0" class="previous-draws">
+    <h2>Previous Group Draws</h2>
+    <div class="draws-grid">
+      <div *ngFor="let draw of list.draws" class="draw-card">
+        <h3>Draw from {{ draw.date | date: "medium" }}</h3>
+        <div class="draw-groups">
+          <div *ngFor="let group of draw.groups" class="group">
+            <h4>{{ group.name }}</h4>
+            <ul>
+              <li *ngFor="let person of group.people">{{ person.name }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading">
+    <p>Loading list...</p>
+  </div>
+</ng-template>
