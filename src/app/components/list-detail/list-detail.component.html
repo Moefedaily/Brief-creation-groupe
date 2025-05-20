@@ -159,7 +159,11 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn-red" [disabled]="personForm.invalid">
+        <button
+          type="submit"
+          class="btn-border"
+          [disabled]="personForm.invalid"
+        >
           {{ editingPerson ? "Update" : "Add" }} Person
         </button>
       </div>
@@ -222,7 +226,7 @@
     <h2>Previous Group Draws</h2>
     <div class="draws-grid">
       <div *ngFor="let draw of list.draws" class="draw-card">
-        <h3>Draw from {{ draw.date | date: "medium" }}</h3>
+        <h3>Draw from {{ draw.date | date : "medium" }}</h3>
         <div class="draw-groups">
           <div *ngFor="let group of draw.groups" class="group">
             <h4>{{ group.name }}</h4>

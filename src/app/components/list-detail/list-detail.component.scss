@@ -144,13 +144,31 @@
       display: flex;
       justify-content: flex-end;
 
-      button {
+     button {
+        background-color: white;
+        color: #e53e3e;
+        border: 1px solid #e53e3e;
+        border-radius: 4px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: rgba(229, 62, 62, 0.1);
+          color: #c53030;
+          border-color: #c53030;
+        }
+
         &:disabled {
-          background-color: #e57979;
+          color: #e57979;
+          border-color: #e57979;
+          background-color: white;
           cursor: not-allowed;
         }
       }
     }
+   
 
     .error-msg {
       color: #e53e3e;
