@@ -43,6 +43,24 @@ export class ListService {
     return [...this.lists];
   }
 
+  getAllPublicLists(): List[] {
+    const allLists: List[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('lists_')) {
+        try {
+          const userLists = JSON.parse(localStorage.getItem(key) || '[]');
+          allLists.push(...userLists);
+        } catch (error) {
+          console.error('Error parsing lists from localStorage:', error);
+        }
+      }
+    }
+
+    return allLists.sort((a, b) => b.id - a.id);
+  }
+
   getListById(id: number): List | undefined {
     this.loadLists();
     return this.lists.find((l) => l.id === id);

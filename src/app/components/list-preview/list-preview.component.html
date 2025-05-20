@@ -1,0 +1,69 @@
+<div class="list-preview-container" *ngIf="!isLoading && list; else loading">
+  <div class="header-actions">
+    <div>
+      <button class="btn-back" (click)="goBack()">&larr; Back to Home</button>
+      <h1>{{ list.name }}</h1>
+    </div>
+    <div class="action-buttons">
+      <button class="btn-red" (click)="login()">Login to Edit</button>
+    </div>
+  </div>
+
+  <div *ngIf="list.people.length === 0" class="no-people">
+    <p>This list has no people yet.</p>
+  </div>
+
+  <div *ngIf="list.people.length > 0" class="people-list">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+          <th>Profile</th>
+          <th>French</th>
+          <th>Tech</th>
+          <th>DWWM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let person of list.people">
+          <td>{{ person.name }}</td>
+          <td>{{ person.age }}</td>
+          <td>{{ person.gender }}</td>
+          <td>{{ person.profile }}</td>
+          <td>{{ person.frenchFluency }}/4</td>
+          <td>{{ person.technicalLevel }}/4</td>
+          <td>{{ person.formerDWWM ? "Yes" : "No" }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="list.draws && list.draws.length > 0" class="previous-draws">
+    <h2>Previous Group Draws</h2>
+    <div class="draws-grid">
+      <div *ngFor="let draw of list.draws" class="draw-card">
+        <h3>Draw from {{ draw.date | date: "medium" }}</h3>
+        <div class="draw-groups">
+          <div *ngFor="let group of draw.groups" class="group">
+            <h4>{{ group.name }}</h4>
+            <ul>
+              <li *ngFor="let person of group.people">{{ person.name }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-msg">
+    {{ errorMessage }}
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading">
+    <p>Loading list...</p>
+  </div>
+</ng-template>

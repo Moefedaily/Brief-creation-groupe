@@ -1,7 +1,6 @@
-// src/app/components/home/home.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, ROUTER_CONFIGURATION, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ListService } from '../../services/list.service';
 import { List } from '../../models/list';
@@ -9,7 +8,7 @@ import { List } from '../../models/list';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
@@ -24,16 +23,13 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      this.loadRecentLists();
-    } else {
-      this.isLoading = false;
-    }
+    this.loadPublicLists();
   }
 
-  loadRecentLists(): void {
+  loadPublicLists(): void {
     try {
-      const allLists = this.listService.getAllLists();
+      this.isLoading = true;
+      const allLists = this.listService.getAllPublicLists();
       this.recentLists = allLists.slice(0, 4);
       this.isLoading = false;
     } catch (error) {
@@ -52,5 +48,13 @@ export class HomeComponent implements OnInit {
 
   isUserLoggedIn(): boolean {
     return this.authService.isLoggedIn();
+  }
+
+  viewList(listId: number): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/lists', listId]);
+    } else {
+      this.router.navigate(['/list-preview', listId]);
+    }
   }
 }

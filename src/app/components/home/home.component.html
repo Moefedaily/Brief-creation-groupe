@@ -55,38 +55,28 @@
 <section id="examples-section" class="examples">
   <h2>Recent Lists</h2>
 
-  <div *ngIf="isUserLoggedIn(); else notLoggedIn">
-    <div *ngIf="isLoading" class="loading-indicator">
-      <p>Loading lists...</p>
-    </div>
-
-    <div *ngIf="!isLoading">
-      <div *ngIf="recentLists.length > 0; else noLists" class="examples-grid">
-        <div
-          *ngFor="let list of recentLists"
-          class="card"
-          [routerLink]="['/lists', list.id]"
-        >
-          <h4>{{ list.name }}</h4>
-          <p>
-            👤 {{ list.people.length }}<br />👥 {{ list.draws.length }} groups
-          </p>
-        </div>
-      </div>
-
-      <ng-template #noLists>
-        <div class="no-lists-message">
-          <p>No lists created yet. Create your first list to get started!</p>
-          <button class="btn-red" [routerLink]="['/lists']">Create List</button>
-        </div>
-      </ng-template>
-    </div>
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading lists...</p>
   </div>
 
-  <ng-template #notLoggedIn>
-    <div class="login-message">
-      <p>Log in to see your lists and create groups</p>
+  <div *ngIf="!isLoading">
+    <div *ngIf="recentLists.length > 0" class="examples-grid">
+      <div
+        *ngFor="let list of recentLists"
+        class="card"
+        (click)="viewList(list.id)"
+      >
+        <h4>{{ list.name }}</h4>
+        <p>
+          👤 {{ list.people.length }} people<br />👥
+          {{ list.draws.length }} groups
+        </p>
+      </div>
+    </div>
+
+    <div *ngIf="recentLists.length === 0" class="no-examples">
+      <p>No lists created yet. Be the first to create a list!</p>
       <button class="btn-red" (click)="onGetStarted()">Get Started</button>
     </div>
-  </ng-template>
+  </div>
 </section>

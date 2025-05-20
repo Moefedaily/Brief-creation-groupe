@@ -18,10 +18,10 @@ export class AuthService {
     },
     {
       id: 2,
-      username: 'teacher',
-      password: 'teacher123',
-      name: 'Sample Teacher',
-      email: 'teacher@example.com',
+      username: 'Laurent',
+      password: 'Laurent123',
+      name: 'Laurent',
+      email: 'Laurent@2.com',
       lastAcceptedTerms: new Date(),
     },
   ];
