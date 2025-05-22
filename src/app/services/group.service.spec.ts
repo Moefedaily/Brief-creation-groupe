@@ -12,11 +12,10 @@ describe('GroupService', () => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(GroupService);
 
-    // Setup mock data
     mockPeople = [
       {
         id: 1,
-        name: 'John Doe',
+        name: 'Doe Desire',
         gender: Gender.MALE,
         frenchFluency: 3,
         formerDWWM: true,
@@ -26,7 +25,7 @@ describe('GroupService', () => {
       },
       {
         id: 2,
-        name: 'Jane Smith',
+        name: 'Britney Spears',
         gender: Gender.FEMALE,
         frenchFluency: 4,
         formerDWWM: false,
@@ -36,7 +35,7 @@ describe('GroupService', () => {
       },
       {
         id: 3,
-        name: 'Alex Johnson',
+        name: 'Kilian Mpappe',
         gender: Gender.NOT_SPECIFIED,
         frenchFluency: 2,
         formerDWWM: true,
@@ -46,7 +45,7 @@ describe('GroupService', () => {
       },
       {
         id: 4,
-        name: 'Maria Garcia',
+        name: 'Maria carey',
         gender: Gender.FEMALE,
         frenchFluency: 1,
         formerDWWM: false,
@@ -56,7 +55,7 @@ describe('GroupService', () => {
       },
       {
         id: 5,
-        name: 'Pierre Dubois',
+        name: 'Will Smith',
         gender: Gender.MALE,
         frenchFluency: 4,
         formerDWWM: true,
@@ -66,7 +65,7 @@ describe('GroupService', () => {
       },
       {
         id: 6,
-        name: 'Sophie Martin',
+        name: 'Gal Gadot',
         gender: Gender.FEMALE,
         frenchFluency: 3,
         formerDWWM: false,
@@ -126,7 +125,6 @@ describe('GroupService', () => {
       );
       expect(totalPeople).toBe(mockPeople.length);
 
-      // With 6 people and 2 groups, each group should have 3 people
       expect(result[0].people.length).toBe(3);
       expect(result[1].people.length).toBe(3);
     });
@@ -149,7 +147,6 @@ describe('GroupService', () => {
       );
       expect(totalPeople).toBe(mockPeople.length);
 
-      // With 6 people and 4 groups: 2 groups get 2 people, 2 groups get 1 person
       const groupSizes = result
         .map((group) => group.people.length)
         .sort((a, b) => b - a);
@@ -173,7 +170,7 @@ describe('GroupService', () => {
 
     it('should throw error when group names length does not match number of groups', () => {
       const numberOfGroups = 2;
-      const groupNames = ['Group A']; // Only one name for 2 groups
+      const groupNames = ['Group A'];
 
       expect(() => {
         service.generateGroups(
@@ -280,7 +277,6 @@ describe('GroupService', () => {
         [previousDraw]
       );
 
-      // The function should still work and produce valid groups
       expect(result.length).toBe(numberOfGroups);
       expect(result[0].people.length + result[1].people.length).toBe(
         mockPeople.length
@@ -296,20 +292,12 @@ describe('GroupService', () => {
         {
           id: 1,
           name: 'Group A',
-          people: [
-            mockPeople[0], // John - Male, DWWM, Comfortable, 25
-            mockPeople[1], // Jane - Female, No DWWM, Reserved, 30
-            mockPeople[2], // Alex - Not Specified, DWWM, Shy, 22
-          ],
+          people: [mockPeople[0], mockPeople[1], mockPeople[2]],
         },
         {
           id: 2,
           name: 'Group B',
-          people: [
-            mockPeople[3], // Maria - Female, No DWWM, Comfortable, 28
-            mockPeople[4], // Pierre - Male, DWWM, Reserved, 35
-            mockPeople[5], // Sophie - Female, No DWWM, Shy, 26
-          ],
+          people: [mockPeople[3], mockPeople[4], mockPeople[5]],
         },
       ];
     });
@@ -317,7 +305,6 @@ describe('GroupService', () => {
     it('should return true for well-mixed groups', () => {
       const result = service.validateGroupMixing(testGroups, mockCriteria);
 
-      // This should return true because groups have good distribution
       expect(typeof result).toBe('boolean');
     });
 
@@ -419,17 +406,16 @@ describe('GroupService', () => {
     });
 
     it('should handle groups with poorly distributed characteristics', () => {
-      // Create groups where all people of same gender are in one group
       const poorlyMixedGroups: Group[] = [
         {
           id: 1,
           name: 'All Males',
-          people: [mockPeople[0], mockPeople[4]], // Both male
+          people: [mockPeople[0], mockPeople[4]],
         },
         {
           id: 2,
           name: 'All Females',
-          people: [mockPeople[1], mockPeople[3], mockPeople[5]], // All female
+          people: [mockPeople[1], mockPeople[3], mockPeople[5]],
         },
       ];
 
@@ -446,7 +432,6 @@ describe('GroupService', () => {
         poorlyMixedGroups,
         genderCriteria
       );
-      // This should detect poor mixing
       expect(typeof result).toBe('boolean');
     });
   });
@@ -489,7 +474,6 @@ describe('GroupService', () => {
     });
 
     it('should handle large number of people', () => {
-      // Create 20 people
       const manyPeople: Person[] = Array.from({ length: 20 }, (_, i) => ({
         id: i + 1,
         name: `Person ${i + 1}`,
@@ -531,7 +515,6 @@ describe('GroupService', () => {
       const numberOfGroups = 2;
       const groupNames = ['Group A', 'Group B'];
 
-      // Generate groups
       const groups = service.generateGroups(
         mockPeople,
         numberOfGroups,
@@ -540,13 +523,11 @@ describe('GroupService', () => {
         []
       );
 
-      // Validate the groups
       const isValid = service.validateGroupMixing(groups, mockCriteria);
 
       expect(groups.length).toBe(numberOfGroups);
       expect(typeof isValid).toBe('boolean');
 
-      // Ensure all original people are still present
       const allPeopleInGroups = groups.flatMap((group) => group.people);
       expect(allPeopleInGroups.length).toBe(mockPeople.length);
     });
