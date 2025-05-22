@@ -20,31 +20,27 @@
 
   <div *ngIf="showPersonForm" class="person-form-card">
     <h2>{{ editingPerson ? "Edit Person" : "Add New Person" }}</h2>
-
     <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
       <div class="form-row">
         <div class="form-group">
           <label for="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            [ngClass]="{ 'is-invalid': f['name'].invalid && f['name'].touched }"
-          />
+          <input type="text" id="name" formControlName="name" />
           <div
-            *ngIf="f['name'].invalid && f['name'].touched"
-            class="invalid-feedback"
+            *ngIf="
+              personForm.get('name')?.touched && personForm.get('name')?.invalid
+            "
           >
-            <div *ngIf="f['name'].errors?.['required']">Name is required</div>
-            <div *ngIf="f['name'].errors?.['minlength']">
+            <div *ngIf="personForm.get('name')?.errors?.['required']">
+              Name is required
+            </div>
+            <div *ngIf="personForm.get('name')?.errors?.['minlength']">
               Name must be at least 3 characters
             </div>
-            <div *ngIf="f['name'].errors?.['maxlength']">
+            <div *ngIf="personForm.get('name')?.errors?.['maxlength']">
               Name must not exceed 50 characters
             </div>
           </div>
         </div>
-
         <div class="form-group">
           <label for="age">Age</label>
           <input
@@ -53,14 +49,18 @@
             formControlName="age"
             min="1"
             max="99"
-            [ngClass]="{ 'is-invalid': f['age'].invalid && f['age'].touched }"
           />
           <div
-            *ngIf="f['age'].invalid && f['age'].touched"
-            class="invalid-feedback"
+            *ngIf="
+              personForm.get('age')?.touched && personForm.get('age')?.invalid
+            "
           >
-            <div *ngIf="f['age'].errors?.['required']">Age is required</div>
-            <div *ngIf="f['age'].errors?.['min'] || f['age'].errors?.['max']">
+            <div *ngIf="personForm.get('age')?.errors?.['required']">
+              Age is required
+            </div>
+            <div
+              *ngIf="personForm.get('age')?.errors?.['min'] || personForm.get('age')?.errors?.['max']"
+            >
               Age must be between 1 and 99
             </div>
           </div>
@@ -75,8 +75,17 @@
               {{ gender }}
             </option>
           </select>
+          <div
+            *ngIf="
+              personForm.get('gender')?.touched &&
+              personForm.get('gender')?.invalid
+            "
+          >
+            <div *ngIf="personForm.get('gender')?.errors?.['required']">
+              Gender is required
+            </div>
+          </div>
         </div>
-
         <div class="form-group">
           <label for="profile">Profile</label>
           <select id="profile" formControlName="profile">
@@ -84,6 +93,16 @@
               {{ profile }}
             </option>
           </select>
+          <div
+            *ngIf="
+              personForm.get('profile')?.touched &&
+              personForm.get('profile')?.invalid
+            "
+          >
+            <div *ngIf="personForm.get('profile')?.errors?.['required']">
+              Profile is required
+            </div>
+          </div>
         </div>
       </div>
 
@@ -96,29 +115,26 @@
             formControlName="frenchFluency"
             min="1"
             max="4"
-            [ngClass]="{
-              'is-invalid':
-                f['frenchFluency'].invalid && f['frenchFluency'].touched,
-            }"
           />
           <div
-            *ngIf="f['frenchFluency'].invalid && f['frenchFluency'].touched"
-            class="invalid-feedback"
+            *ngIf="
+              personForm.get('frenchFluency')?.touched &&
+              personForm.get('frenchFluency')?.invalid
+            "
           >
-            <div *ngIf="f['frenchFluency'].errors?.['required']">
+            <div *ngIf="personForm.get('frenchFluency')?.errors?.['required']">
               French fluency level is required
             </div>
             <div
               *ngIf="
-                f['frenchFluency'].errors?.['min'] ||
-                f['frenchFluency'].errors?.['max']
+                personForm.get('frenchFluency')?.errors?.['min'] ||
+                personForm.get('frenchFluency')?.errors?.['max']
               "
             >
               Level must be between 1 and 4
             </div>
           </div>
         </div>
-
         <div class="form-group">
           <label for="technicalLevel">Technical Level (1-4)</label>
           <input
@@ -127,22 +143,20 @@
             formControlName="technicalLevel"
             min="1"
             max="4"
-            [ngClass]="{
-              'is-invalid':
-                f['technicalLevel'].invalid && f['technicalLevel'].touched,
-            }"
           />
           <div
-            *ngIf="f['technicalLevel'].invalid && f['technicalLevel'].touched"
-            class="invalid-feedback"
+            *ngIf="
+              personForm.get('technicalLevel')?.touched &&
+              personForm.get('technicalLevel')?.invalid
+            "
           >
-            <div *ngIf="f['technicalLevel'].errors?.['required']">
+            <div *ngIf="personForm.get('technicalLevel')?.errors?.['required']">
               Technical level is required
             </div>
             <div
               *ngIf="
-                f['technicalLevel'].errors?.['min'] ||
-                f['technicalLevel'].errors?.['max']
+                personForm.get('technicalLevel')?.errors?.['min'] ||
+                personForm.get('technicalLevel')?.errors?.['max']
               "
             >
               Level must be between 1 and 4
@@ -168,7 +182,6 @@
         </button>
       </div>
     </form>
-
     <div *ngIf="errorMessage" class="error-msg">
       {{ errorMessage }}
     </div>

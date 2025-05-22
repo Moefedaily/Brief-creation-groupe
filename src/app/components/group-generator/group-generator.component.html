@@ -12,7 +12,7 @@
 
       <form [formGroup]="generatorForm">
         <div class="form-group">
-          <label for="numberOfGroups">Number of Groups</label>
+          <label for="numberOfGroups">Number of Groups:</label>
           <input
             type="number"
             id="numberOfGroups"
@@ -21,11 +21,18 @@
             [max]="list.people.length"
             (change)="onNumberOfGroupsChange()"
           />
-          <div *ngIf="f['numberOfGroups'].invalid" class="invalid-feedback">
-            <div *ngIf="f['numberOfGroups'].errors?.['required']">
+          <div
+            *ngIf="
+              generatorForm.get('numberOfGroups')?.touched &&
+              generatorForm.get('numberOfGroups')?.invalid
+            "
+          >
+            <div
+              *ngIf="generatorForm.get('numberOfGroups')?.errors?.['required']"
+            >
               Number of groups is required
             </div>
-            <div *ngIf="f['numberOfGroups'].errors?.['min']">
+            <div *ngIf="generatorForm.get('numberOfGroups')?.errors?.['min']">
               At least 2 groups required
             </div>
           </div>
@@ -92,13 +99,18 @@
               *ngFor="let groupControl of groupNames.controls; let i = index"
               class="form-group"
             >
-              <label for="groupName{{ i }}">Group {{ i + 1 }}</label>
+              <label for="groupName{{ i }}">Group {{ i + 1 }}:</label>
               <input
                 type="text"
                 id="groupName{{ i }}"
                 [formControlName]="i"
                 required
               />
+              <div *ngIf="groupControl.touched && groupControl.invalid">
+                <div *ngIf="groupControl.errors?.['required']">
+                  Group name is required
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -157,8 +169,8 @@
                     person.gender === "masculin"
                       ? "♂"
                       : person.gender === "féminin"
-                        ? "♀"
-                        : "⚧"
+                      ? "♀"
+                      : "⚧"
                   }}
                   {{ person.formerDWWM ? "🔄" : "" }}
                 </span>

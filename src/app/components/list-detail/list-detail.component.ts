@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormGroup,
-  FormBuilder,
+  FormControl,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +20,7 @@ import { Person, Gender, Profile } from '../../models/person';
 })
 export class ListDetailComponent implements OnInit {
   list: List | undefined;
-  personForm!: FormGroup;
+  personForm: FormGroup;
   showPersonForm = false;
   editingPerson: Person | null = null;
   errorMessage = '';
@@ -33,13 +33,36 @@ export class ListDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder: FormBuilder,
-    private listService: ListService,
-  ) {}
+    private listService: ListService
+  ) {
+    this.personForm = new FormGroup({
+      name: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50),
+      ]),
+      gender: new FormControl(Gender.NOT_SPECIFIED, [Validators.required]),
+      frenchFluency: new FormControl(1, [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(4),
+      ]),
+      formerDWWM: new FormControl(false, [Validators.required]),
+      technicalLevel: new FormControl(1, [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(4),
+      ]),
+      profile: new FormControl(Profile.RESERVED, [Validators.required]),
+      age: new FormControl(18, [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(99),
+      ]),
+    });
+  }
 
   ngOnInit(): void {
-    this.initForm();
-
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('id'));
       if (isNaN(id)) {
@@ -66,35 +89,6 @@ export class ListDetailComponent implements OnInit {
     }
   }
 
-  private initForm(): void {
-    this.personForm = this.formBuilder.group({
-      name: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(50),
-        ],
-      ],
-      gender: [Gender.NOT_SPECIFIED, Validators.required],
-      frenchFluency: [
-        1,
-        [Validators.required, Validators.min(1), Validators.max(4)],
-      ],
-      formerDWWM: [false, Validators.required],
-      technicalLevel: [
-        1,
-        [Validators.required, Validators.min(1), Validators.max(4)],
-      ],
-      profile: [Profile.RESERVED, Validators.required],
-      age: [18, [Validators.required, Validators.min(1), Validators.max(99)]],
-    });
-  }
-
-  get f() {
-    return this.personForm.controls;
-  }
-
   togglePersonForm(person?: Person): void {
     this.showPersonForm = !this.showPersonForm;
 
@@ -103,10 +97,19 @@ export class ListDetailComponent implements OnInit {
 
       if (person) {
         this.editingPerson = person;
-        this.personForm.patchValue(person);
+        this.personForm.setValue({
+          name: person.name,
+          gender: person.gender,
+          frenchFluency: person.frenchFluency,
+          formerDWWM: person.formerDWWM,
+          technicalLevel: person.technicalLevel,
+          profile: person.profile,
+          age: person.age,
+        });
       } else {
         this.editingPerson = null;
-        this.personForm.reset({
+        this.personForm.setValue({
+          name: '',
           gender: Gender.NOT_SPECIFIED,
           frenchFluency: 1,
           formerDWWM: false,
@@ -124,17 +127,27 @@ export class ListDetailComponent implements OnInit {
     }
 
     try {
+      const personData = {
+        name: this.personForm.get('name')?.value,
+        gender: this.personForm.get('gender')?.value,
+        frenchFluency: this.personForm.get('frenchFluency')?.value,
+        formerDWWM: this.personForm.get('formerDWWM')?.value,
+        technicalLevel: this.personForm.get('technicalLevel')?.value,
+        profile: this.personForm.get('profile')?.value,
+        age: this.personForm.get('age')?.value,
+      };
+
       if (this.editingPerson) {
         const updatedPerson: Person = {
           ...this.editingPerson,
-          ...this.personForm.value,
+          ...personData,
         };
 
         this.listService.updatePerson(this.listId, updatedPerson);
         this.loadList();
         this.togglePersonForm();
       } else {
-        this.listService.addPerson(this.listId, this.personForm.value);
+        this.listService.addPerson(this.listId, personData);
         this.loadList();
         this.togglePersonForm();
       }

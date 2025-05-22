@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormGroup,
-  FormBuilder,
+  FormControl,
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -19,29 +19,23 @@ import { List } from '../../models/list';
 })
 export class ListsComponent implements OnInit {
   lists: List[] = [];
-  newListForm!: FormGroup;
+  newListForm: FormGroup;
   showNewListForm = false;
   errorMessage = '';
   isLoading = true;
 
-  constructor(
-    private listService: ListService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-  ) {}
+  constructor(private listService: ListService, private router: Router) {
+    this.newListForm = new FormGroup({
+      name: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(50),
+      ]),
+    });
+  }
 
   ngOnInit(): void {
     this.loadLists();
-    this.newListForm = this.formBuilder.group({
-      name: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(50),
-        ],
-      ],
-    });
   }
 
   loadLists(): void {
@@ -53,10 +47,6 @@ export class ListsComponent implements OnInit {
       this.errorMessage = error.message;
       this.isLoading = false;
     }
-  }
-
-  get f() {
-    return this.newListForm.controls;
   }
 
   toggleNewListForm(): void {
@@ -73,7 +63,8 @@ export class ListsComponent implements OnInit {
     }
 
     try {
-      this.listService.createList(this.f['name'].value);
+      const name = this.newListForm.get('name')?.value;
+      this.listService.createList(name);
       this.loadLists();
       this.toggleNewListForm();
     } catch (error: any) {
@@ -89,7 +80,7 @@ export class ListsComponent implements OnInit {
     event.stopPropagation();
     if (
       confirm(
-        'Are you sure you want to delete this list? This action cannot be undone.',
+        'Are you sure you want to delete this list? This action cannot be undone.'
       )
     ) {
       try {

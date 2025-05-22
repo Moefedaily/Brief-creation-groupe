@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormGroup,
-  FormBuilder,
+  FormControl,
   FormArray,
   Validators,
 } from '@angular/forms';
@@ -31,8 +31,8 @@ export class GroupGeneratorComponent implements OnInit {
   list: List | undefined;
   isLoading = true;
   listId!: number;
-  generatorForm!: FormGroup;
-  groupsForm!: FormGroup;
+  generatorForm: FormGroup;
+  groupsForm: FormGroup;
   generatedGroups: Group[] = [];
   showGroups = false;
   errorMessage = '';
@@ -40,14 +40,30 @@ export class GroupGeneratorComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder: FormBuilder,
     private listService: ListService,
-    private groupService: GroupService,
-  ) {}
+    private groupService: GroupService
+  ) {
+    this.generatorForm = new FormGroup({
+      numberOfGroups: new FormControl(2, [
+        Validators.required,
+        Validators.min(2),
+      ]),
+      mixGender: new FormControl(false),
+      mixFrenchFluency: new FormControl(false),
+      mixFormerDWWM: new FormControl(false),
+      mixTechnicalLevel: new FormControl(false),
+      mixProfile: new FormControl(false),
+      mixAge: new FormControl(false),
+    });
+
+    this.groupsForm = new FormGroup({
+      groupNames: new FormArray([]),
+    });
+
+    this.createGroupNamesFormArray(2);
+  }
 
   ngOnInit(): void {
-    this.initForms();
-
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('id'));
       if (isNaN(id)) {
@@ -74,44 +90,23 @@ export class GroupGeneratorComponent implements OnInit {
     }
   }
 
-  private initForms(): void {
-    this.generatorForm = this.formBuilder.group({
-      numberOfGroups: [2, [Validators.required, Validators.min(2)]],
-      mixGender: [true],
-      mixFrenchFluency: [true],
-      mixFormerDWWM: [true],
-      mixTechnicalLevel: [true],
-      mixProfile: [true],
-      mixAge: [true],
-    });
-
-    this.groupsForm = this.formBuilder.group({
-      groupNames: this.formBuilder.array([]),
-    });
-
-    this.createGroupNamesFormArray(2);
-  }
-
-  get f() {
-    return this.generatorForm.controls;
-  }
   get groupNames() {
     return this.groupsForm.get('groupNames') as FormArray;
   }
 
   onNumberOfGroupsChange(): void {
-    const numberOfGroups = this.f['numberOfGroups'].value;
+    const numberOfGroups = this.generatorForm.get('numberOfGroups')?.value;
     this.createGroupNamesFormArray(numberOfGroups);
   }
 
   private createGroupNamesFormArray(count: number): void {
-    while (this.groupNames.length) {
-      this.groupNames.removeAt(0);
+    while ((this.groupsForm.get('groupNames') as FormArray).length) {
+      (this.groupsForm.get('groupNames') as FormArray).removeAt(0);
     }
 
     for (let i = 0; i < count; i++) {
-      this.groupNames.push(
-        this.formBuilder.control(`Group ${i + 1}`, [Validators.required]),
+      (this.groupsForm.get('groupNames') as FormArray).push(
+        new FormControl(`Group ${i + 1}`, [Validators.required])
       );
     }
   }
@@ -121,22 +116,22 @@ export class GroupGeneratorComponent implements OnInit {
       return;
     }
 
-    const numberOfGroups = this.f['numberOfGroups'].value;
+    const numberOfGroups = this.generatorForm.get('numberOfGroups')?.value;
 
     if (this.list.people.length < numberOfGroups) {
       this.errorMessage = `Cannot create ${numberOfGroups} groups with only ${this.list.people.length} people.`;
       return;
     }
 
-    const groupNames = this.groupNames.value;
+    const groupNames = (this.groupsForm.get('groupNames') as FormArray).value;
 
     const criteria: MixCriteria = {
-      mixGender: this.f['mixGender'].value,
-      mixFrenchFluency: this.f['mixFrenchFluency'].value,
-      mixFormerDWWM: this.f['mixFormerDWWM'].value,
-      mixTechnicalLevel: this.f['mixTechnicalLevel'].value,
-      mixProfile: this.f['mixProfile'].value,
-      mixAge: this.f['mixAge'].value,
+      mixGender: this.generatorForm.get('mixGender')?.value,
+      mixFrenchFluency: this.generatorForm.get('mixFrenchFluency')?.value,
+      mixFormerDWWM: this.generatorForm.get('mixFormerDWWM')?.value,
+      mixTechnicalLevel: this.generatorForm.get('mixTechnicalLevel')?.value,
+      mixProfile: this.generatorForm.get('mixProfile')?.value,
+      mixAge: this.generatorForm.get('mixAge')?.value,
     };
 
     try {
@@ -145,7 +140,7 @@ export class GroupGeneratorComponent implements OnInit {
         numberOfGroups,
         groupNames,
         criteria,
-        this.list.draws,
+        this.list.draws
       );
 
       this.showGroups = true;
@@ -167,12 +162,12 @@ export class GroupGeneratorComponent implements OnInit {
       listId: this.listId,
       groups: this.generatedGroups,
       criteria: {
-        mixGender: this.f['mixGender'].value,
-        mixFrenchFluency: this.f['mixFrenchFluency'].value,
-        mixFormerDWWM: this.f['mixFormerDWWM'].value,
-        mixTechnicalLevel: this.f['mixTechnicalLevel'].value,
-        mixProfile: this.f['mixProfile'].value,
-        mixAge: this.f['mixAge'].value,
+        mixGender: this.generatorForm.get('mixGender')?.value,
+        mixFrenchFluency: this.generatorForm.get('mixFrenchFluency')?.value,
+        mixFormerDWWM: this.generatorForm.get('mixFormerDWWM')?.value,
+        mixTechnicalLevel: this.generatorForm.get('mixTechnicalLevel')?.value,
+        mixProfile: this.generatorForm.get('mixProfile')?.value,
+        mixAge: this.generatorForm.get('mixAge')?.value,
       },
     };
 
@@ -189,14 +184,14 @@ export class GroupGeneratorComponent implements OnInit {
       moveItemInArray(
         event.container.data,
         event.previousIndex,
-        event.currentIndex,
+        event.currentIndex
       );
     } else {
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
         event.previousIndex,
-        event.currentIndex,
+        event.currentIndex
       );
     }
   }
