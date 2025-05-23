@@ -1,59 +1,62 @@
 # GroupFormer
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.9.
+A web app that helps instructors create balanced groups for their classes. Built with Angular and deployed on Vercel.
 
-## Development server
+## 🔗 Links
 
-To start a local development server, run:
+- **Live Site**: [group-former-3cg9pbfxi-moefedailys-projects.vercel.app](https://group-former-875o5fbnf-moefedailys-projects.vercel.app/)
+- **Figma Design**: [GroupMaker Design](https://www.figma.com/design/vtjnN1k3KxhkQf6D2LFoeY/GroupMaker?node-id=0-1&t=RbnGPpvlqSNPnZ5T-0)
 
-```bash
-ng serve
-```
+## Demo Credentials
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+To test the app, use:
 
-## Code scaffolding
+- **Username**: `admin`
+- **Password**: `admin123`
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Key Features
 
-```bash
-ng generate component component-name
-```
+- **Smart Group Creation**: Balance groups based on criteria like age, technical level, French fluency, gender, and personality profiles
+- **History Tracking**: Never recreate the same groups - the app remembers past combinations
+- **Manual Adjustments**: Drag and drop people between groups if needed
+- **Responsive Design**: Works on mobile, tablet, and desktop
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## How it works
 
-```bash
-ng generate --help
-```
+1. Create a list and add people with their attributes
+2. Choose how many groups you want and which criteria to balance
+3. Generate groups automatically or adjust them manually
+4. Save the results - they're stored in your history
 
-## Building
+## Tech Stack
 
-To build the project run:
+- **Frontend**: Angular with TypeScript
+- **Styling**: SCSS with modern design patterns
+- **Deployment**: Vercel
+- **Testing**: Jest for unit tests
+- **Data**: Local storage (no database yet)
 
-```bash
-ng build
-```
+## Testing
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Unit tests are implemented with Jest, focusing on:
 
-## Running unit tests
+- Group generation algorithms
+- Balancing criteria logic
+- Data validation
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Run test for group service only with:
 
 ```bash
-ng e2e
+npx jest src/app/services/group.service.spec.ts
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Local Development
 
-## Additional Resources
+```bash
+# Install dependencies
+npm install
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+# Start  server
+ng s
+
+```
