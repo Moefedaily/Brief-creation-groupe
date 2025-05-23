@@ -2,6 +2,12 @@
   <div class="login-card">
     <h2>Login</h2>
 
+    <div class="demo-hint">
+      <p><strong>Demo credentials:</strong></p>
+      <p>Username: <code>admin</code></p>
+      <p>Password: <code>admin123</code></p>
+    </div>
+
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="username">Username:</label>
