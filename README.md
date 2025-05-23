@@ -4,7 +4,7 @@ A web app that helps instructors create balanced groups for their classes. Built
 
 ## 🔗 Links
 
-- **Live Site**: [group-former-3cg9pbfxi-moefedailys-projects.vercel.app](https://group-former-875o5fbnf-moefedailys-projects.vercel.app/)
+- **Live Site**: [group-former-3cg9pbfxi-moefedailys-projects.vercel.app](https://group-former-fkydtkfck-moefedailys-projects.vercel.app/)
 - **Figma Design**: [GroupMaker Design](https://www.figma.com/design/vtjnN1k3KxhkQf6D2LFoeY/GroupMaker?node-id=0-1&t=RbnGPpvlqSNPnZ5T-0)
 
 ## Demo Credentials
