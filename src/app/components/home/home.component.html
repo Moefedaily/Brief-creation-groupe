@@ -75,7 +75,15 @@
     </div>
 
     <div *ngIf="recentLists.length === 0" class="no-examples">
-      <p>No lists created yet. Be the first to create a list!</p>
+      <div *ngIf="isUserLoggedIn()" class="empty-state logged-in">
+        <div class="empty-icon">✨</div>
+        <h3>Ready to create your first list?</h3>
+        <button class="btn-red" (click)="onGetStarted()">Create List</button>
+      </div>
+
+      <div *ngIf="!isUserLoggedIn()" class="empty-state public">
+        <h3>No lists available</h3>
+      </div>
     </div>
   </div>
 </section>
